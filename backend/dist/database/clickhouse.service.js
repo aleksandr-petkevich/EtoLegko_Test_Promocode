@@ -10,7 +10,7 @@ exports.ClickHouseService = void 0;
 const common_1 = require("@nestjs/common");
 const client_1 = require("@clickhouse/client");
 let ClickHouseService = class ClickHouseService {
-    onModuleInit() {
+    async onModuleInit() {
         this.client = (0, client_1.createClient)({
             host: 'http://localhost:8123',
             username: 'default',
@@ -39,6 +39,15 @@ let ClickHouseService = class ClickHouseService {
         }
         const query = `ALTER TABLE promocodes DELETE WHERE id = '${id}'`;
         await this.client.command(query);
+    }
+    async insertUsage(data) {
+        console.log('Inserting usage into ClickHouse:', data);
+        await this.client.insert({
+            table: 'promocode_usage',
+            values: [data],
+            format: 'JSONEachRow',
+        });
+        console.log('Successfully inserted usage into ClickHouse');
     }
     async getPromocodes(filters = {}) {
         let query = 'SELECT * FROM promocodes WHERE 1=1';
@@ -88,22 +97,31 @@ let ClickHouseService = class ClickHouseService {
         }
     }
     async getUsageByDay() {
+        console.log('Fetching usage by day from ClickHouse');
         const result = await this.client.query({
             query: `
-        SELECT toDate(used_at) as date, count(*) as usage_count
-        FROM promocode_usage
-        WHERE used_at >= now() - INTERVAL 30 DAY
-        GROUP BY date
-        ORDER BY date
+        SELECT 
+            d.date,
+            sum(u.usage_count) as usage_count
+        FROM (
+            SELECT toDate(now() - INTERVAL number DAY) as date
+            FROM numbers(30)
+        ) d
+        LEFT JOIN promocode_usage u ON toDate(u.used_at) = d.date
+        GROUP BY d.date
+        ORDER BY d.date
       `,
             format: 'JSONEachRow',
         });
-        return result.json();
+        const data = await result.json();
+        console.log('Usage by day data:', data);
+        return data;
     }
     async getTopPromocodes() {
+        console.log('Fetching top promocodes from ClickHouse');
         const result = await this.client.query({
             query: `
-        SELECT promocode_code, count(*) as usage_count
+        SELECT promocode_code, sum(usage_count) as usage_count
         FROM promocode_usage
         GROUP BY promocode_code
         ORDER BY usage_count DESC
@@ -111,7 +129,9 @@ let ClickHouseService = class ClickHouseService {
       `,
             format: 'JSONEachRow',
         });
-        return result.json();
+        const data = await result.json();
+        console.log('Top promocodes data:', data);
+        return data;
     }
     async getStatusDistribution() {
         const result = await this.client.query({

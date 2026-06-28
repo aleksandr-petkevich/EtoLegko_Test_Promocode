@@ -1,6 +1,7 @@
 import { Document } from 'mongoose';
 export type PromocodeDocument = Promocode & Document;
 export declare class Promocode {
+    id: string;
     code: string;
     discount_type: string;
     discount_value: number;

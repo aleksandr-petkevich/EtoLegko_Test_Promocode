@@ -1,10 +1,11 @@
 import { OnModuleInit } from '@nestjs/common';
 export declare class ClickHouseService implements OnModuleInit {
     private client;
-    onModuleInit(): void;
+    onModuleInit(): Promise<void>;
     insertPromocode(data: any): Promise<void>;
     updatePromocode(id: string, data: any): Promise<void>;
     deletePromocode(id: string): Promise<void>;
+    insertUsage(data: any): Promise<void>;
     getPromocodes(filters?: any): Promise<any>;
     getAnalytics(): Promise<{
         usageByDay: any;

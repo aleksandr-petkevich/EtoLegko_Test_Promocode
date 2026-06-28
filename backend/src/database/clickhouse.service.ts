@@ -5,7 +5,7 @@ import { createClient } from '@clickhouse/client';
 export class ClickHouseService implements OnModuleInit {
     private client;
 
-    onModuleInit() {
+    async onModuleInit() {
         this.client = createClient({
             host: 'http://localhost:8123',
             username: 'default',
@@ -37,6 +37,16 @@ export class ClickHouseService implements OnModuleInit {
         }
         const query = `ALTER TABLE promocodes DELETE WHERE id = '${id}'`;
         await this.client.command(query);
+    }
+
+    async insertUsage(data: any) {
+        console.log('Inserting usage into ClickHouse:', data);
+        await this.client.insert({
+            table: 'promocode_usage',
+            values: [data],
+            format: 'JSONEachRow',
+        });
+        console.log('Successfully inserted usage into ClickHouse');
     }
 
     async getPromocodes(filters: any = {}) {
@@ -92,23 +102,32 @@ export class ClickHouseService implements OnModuleInit {
     }
 
     private async getUsageByDay() {
+        console.log('Fetching usage by day from ClickHouse');
         const result = await this.client.query({
             query: `
-        SELECT toDate(used_at) as date, count(*) as usage_count
-        FROM promocode_usage
-        WHERE used_at >= now() - INTERVAL 30 DAY
-        GROUP BY date
-        ORDER BY date
+        SELECT 
+            d.date,
+            sum(u.usage_count) as usage_count
+        FROM (
+            SELECT toDate(now() - INTERVAL number DAY) as date
+            FROM numbers(30)
+        ) d
+        LEFT JOIN promocode_usage u ON toDate(u.used_at) = d.date
+        GROUP BY d.date
+        ORDER BY d.date
       `,
             format: 'JSONEachRow',
         });
-        return result.json();
+        const data = await result.json();
+        console.log('Usage by day data:', data);
+        return data;
     }
 
     private async getTopPromocodes() {
+        console.log('Fetching top promocodes from ClickHouse');
         const result = await this.client.query({
             query: `
-        SELECT promocode_code, count(*) as usage_count
+        SELECT promocode_code, sum(usage_count) as usage_count
         FROM promocode_usage
         GROUP BY promocode_code
         ORDER BY usage_count DESC
@@ -116,7 +135,9 @@ export class ClickHouseService implements OnModuleInit {
       `,
             format: 'JSONEachRow',
         });
-        return result.json();
+        const data = await result.json();
+        console.log('Top promocodes data:', data);
+        return data;
     }
 
     private async getStatusDistribution() {

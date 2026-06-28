@@ -14,7 +14,10 @@ const database_module_1 = require("../database/database.module");
 const promocode_controller_1 = require("./promocode.controller");
 const promocode_service_1 = require("./promocode.service");
 const promocode_schema_1 = require("./schemas/promocode.schema");
+const usage_schema_1 = require("./schemas/usage.schema");
 const promocode_event_handler_1 = require("./promocode-event.handler");
+const usage_controller_1 = require("./usage.controller");
+const usage_service_1 = require("./usage.service");
 const CommandHandlers = [];
 const QueryHandlers = [];
 let PromocodesModule = class PromocodesModule {
@@ -25,10 +28,11 @@ exports.PromocodesModule = PromocodesModule = __decorate([
         imports: [
             cqrs_1.CqrsModule,
             mongoose_1.MongooseModule.forFeature([{ name: 'Promocode', schema: promocode_schema_1.PromocodeSchema }]),
+            mongoose_1.MongooseModule.forFeature([{ name: 'Usage', schema: usage_schema_1.UsageSchema }]),
             database_module_1.DatabaseModule,
         ],
-        controllers: [promocode_controller_1.PromocodeController],
-        providers: [promocode_service_1.PromocodeService, promocode_event_handler_1.PromocodeEventHandler, ...CommandHandlers, ...QueryHandlers],
+        controllers: [promocode_controller_1.PromocodeController, usage_controller_1.UsageController],
+        providers: [promocode_service_1.PromocodeService, usage_service_1.UsageService, promocode_event_handler_1.PromocodeEventHandler, ...CommandHandlers, ...QueryHandlers],
     })
 ], PromocodesModule);
 //# sourceMappingURL=promocodes.module.js.map

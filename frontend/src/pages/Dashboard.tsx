@@ -50,6 +50,10 @@ export default function Dashboard() {
     const activeCount = analytics.activeCount || 0;
     const conversionRate = total_count > 0 ? ((used_count / total_count) * 100).toFixed(1) : 0;
 
+    // Calculate max values for charts
+    const maxUsageByDay = Math.max(...analytics.usageByDay.map(item => item.usage_count || 0), 0);
+    const maxTopPromocodes = Math.max(...analytics.topPromocodes.map(item => item.usage_count || 0), 0);
+
     const statusColumns = [
         { title: 'Статус', dataIndex: 'status', key: 'status' },
         { title: 'Количество', dataIndex: 'count', key: 'count' },
@@ -90,7 +94,7 @@ export default function Dashboard() {
                             <LineChart data={analytics.usageByDay}>
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="date" />
-                                <YAxis />
+                                <YAxis domain={[0, maxUsageByDay]} allowDecimals={false} />
                                 <Tooltip />
                                 <Line type="monotone" dataKey="usage_count" stroke="#1890ff" strokeWidth={2} />
                             </LineChart>
@@ -129,7 +133,7 @@ export default function Dashboard() {
                             <BarChart data={analytics.topPromocodes}>
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="promocode_code" />
-                                <YAxis />
+                                <YAxis domain={[0, maxTopPromocodes]} allowDecimals={false} />
                                 <Tooltip />
                                 <Legend />
                                 <Bar dataKey="usage_count" fill="#1890ff" />

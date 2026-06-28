@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS promocode_usage (
     promocode_id String,
     promocode_code String,
     used_at DateTime,
+    usage_count UInt32 DEFAULT 1,
     order_amount Float64,
     discount_applied Float64
 ) ENGINE = MergeTree()

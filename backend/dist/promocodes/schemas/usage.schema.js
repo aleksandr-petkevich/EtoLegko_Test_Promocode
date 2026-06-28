@@ -9,45 +9,37 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PromocodeSchema = exports.Promocode = void 0;
+exports.UsageSchema = exports.Usage = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
-let Promocode = class Promocode {
+let Usage = class Usage {
 };
-exports.Promocode = Promocode;
+exports.Usage = Usage;
 __decorate([
-    (0, mongoose_1.Prop)({ required: true, unique: true }),
+    (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", String)
-], Promocode.prototype, "id", void 0);
+], Usage.prototype, "promocode_id", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ required: true, unique: true }),
+    (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", String)
-], Promocode.prototype, "code", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({ required: true, enum: ['percentage', 'fixed'] }),
-    __metadata("design:type", String)
-], Promocode.prototype, "discount_type", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({ required: true, min: 0 }),
-    __metadata("design:type", Number)
-], Promocode.prototype, "discount_value", void 0);
+], Usage.prototype, "promocode_code", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", Date)
-], Promocode.prototype, "valid_until", void 0);
+], Usage.prototype, "used_at", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ required: true, min: 0, default: 1 }),
     __metadata("design:type", Number)
-], Promocode.prototype, "usage_limit", void 0);
+], Usage.prototype, "usage_count", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ required: true, min: 0, default: 0 }),
-    __metadata("design:type", Number)
-], Promocode.prototype, "usage_count", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({ required: true, enum: ['active', 'expired', 'disabled'], default: 'active' }),
+    (0, mongoose_1.Prop)({ required: false }),
     __metadata("design:type", String)
-], Promocode.prototype, "status", void 0);
-exports.Promocode = Promocode = __decorate([
+], Usage.prototype, "user_id", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: false }),
+    __metadata("design:type", String)
+], Usage.prototype, "comment", void 0);
+exports.Usage = Usage = __decorate([
     (0, mongoose_1.Schema)({ timestamps: true })
-], Promocode);
-exports.PromocodeSchema = mongoose_1.SchemaFactory.createForClass(Promocode);
-//# sourceMappingURL=promocode.schema.js.map
+], Usage);
+exports.UsageSchema = mongoose_1.SchemaFactory.createForClass(Usage);
+//# sourceMappingURL=usage.schema.js.map

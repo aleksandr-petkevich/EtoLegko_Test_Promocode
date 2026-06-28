@@ -6,6 +6,9 @@ export type PromocodeDocument = Promocode & Document;
 @Schema({ timestamps: true })
 export class Promocode {
     @Prop({ required: true, unique: true })
+    id: string;
+
+    @Prop({ required: true, unique: true })
     code: string;
 
     @Prop({ required: true, enum: ['percentage', 'fixed'] })
